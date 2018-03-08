@@ -20,7 +20,7 @@ do
     then
         DEP_SERVICE_VOLUMN="$DEP_SERVICE_VOLUMN -v $ROOT_DIR/../$SERVICE_NAME:/var/www/$SERVICE_NAME"
 
-        if docker exec distributed_service_frame echo ok > /dev/null 2>&1
+        if docker exec $SERVICE_NAME echo ok > /dev/null 2>&1
         then
             LINK="$LINK --link $SERVICE_NAME:$SERVICE_NAME";
         fi
