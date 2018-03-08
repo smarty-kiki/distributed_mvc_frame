@@ -1,0 +1,2 @@
+#service_name                 service_git_repository_url
+distributed_service_frame     https://github.com/smarty-kiki/distributed_service_frame.git
