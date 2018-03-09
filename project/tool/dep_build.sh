@@ -52,7 +52,7 @@ function dep_frame_link
     add_gitignore '/frame'
 }
 
-function dep_build_file
+function dep_service_file
 {
     SERVICE_NAME=$1
     SERVICE_REPOSITORY=$2
@@ -70,7 +70,7 @@ function dep_build_file
     rm -rf $SERVICE_TMP_DIR
 }
 
-function dep_build_link
+function dep_service_link
 {
     SERVICE_NAME=$1
     SERVICE_REPOSITORY=$2
@@ -87,6 +87,37 @@ function dep_build_link
 
     ln -fs `get_relative_path $SERVICE_TMP_DIR/domain $DEP_DOMAIN_DIR` $DEP_DOMAIN_DIR/$SERVICE_NAME
     echo "include __DIR__.'/$SERVICE_NAME/load.php';" >> $DEP_DOMAIN_DIR/load.php
+}
+
+function dep_cli_file
+{
+    CLI_NAME=$1
+    CLI_REPOSITORY=$2
+    CLI_TMP_DIR=$ROOT_DIR/.dep_tmp_dir
+
+    git_clone $CLI_REPOSITORY $CLI_TMP_DIR $CLI_NAME
+    checkout_branch $CLI_TMP_DIR $BRANCH
+
+    cp -r $CLI_TMP_DIR/queue_job $DEP_QUEUE_JOB_DIR/$CLI_NAME
+    echo "include __DIR__.'/$CLI_NAME/load.php';" >> $DEP_QUEUE_JOB_DIR/load.php
+
+    rm -rf $CLI_TMP_DIR
+}
+
+function dep_cli_link
+{
+    CLI_NAME=$1
+    CLI_REPOSITORY=$2
+    CLI_TMP_DIR=$ROOT_DIR/../$CLI_NAME
+
+    if [ ! -d $CLI_TMP_DIR ]
+    then
+        git_clone $CLI_REPOSITORY $CLI_TMP_DIR $CLI_NAME
+    fi
+    checkout_branch $CLI_TMP_DIR $BRANCH
+
+    ln -fs `get_relative_path $CLI_TMP_DIR/queue_job $DEP_QUEUE_JOB_DIR` $DEP_QUEUE_JOB_DIR/$CLI_NAME
+    echo "include __DIR__.'/$CLI_NAME/load.php';" >> $DEP_QUEUE_JOB_DIR/load.php
 }
 
 # ------------------ start --------------------
@@ -117,17 +148,25 @@ rm -rf $FRAME_DIR
 dep_frame_$TYPE
 
 # ------------------ add depend ------------------
-DEP_FILE=$ROOT_DIR/dep_service_list
-if [ ! -f $DEP_FILE ]
+DEP_SERVICE_FILE=$ROOT_DIR/dep_service_list
+if [ ! -f $DEP_SERVICE_FILE ]
 then
-    echo "DEP_FILE 不存在，检查 $DEP_FILE"
+    echo "DEP_SERVICE_FILE 不存在，检查 $DEP_SERVICE_FILE"
+    exit
+fi
+
+DEP_CLI_FILE=$ROOT_DIR/dep_cli_list
+if [ ! -f $DEP_CLI_FILE ]
+then
+    echo "DEP_CLI_FILE 不存在，检查 $DEP_CLI_FILE"
     exit
 fi
 
 DEP_CLIENT_DIR=$ROOT_DIR/dep_client
 DEP_DOMAIN_DIR=$ROOT_DIR/dep_domain
+DEP_QUEUE_JOB_DIR=$ROOT_DIR/dep_queue_job
 
-for d in /dep_client /dep_domain
+for d in /dep_client /dep_domain /dep_queue_job
 do
     dir=$ROOT_DIR/$d
     rm -rf $dir
@@ -137,7 +176,12 @@ do
     add_gitignore $d
 done
 
-cat $DEP_FILE | grep -v ^# | while read arg
+cat $DEP_SERVICE_FILE | grep -v ^# | while read arg
 do
-    dep_build_$TYPE $arg
+    dep_service_$TYPE $arg
+done
+
+cat $DEP_CLI_FILE | grep -v ^# | while read arg
+do
+    dep_cli_$TYPE $arg
 done
