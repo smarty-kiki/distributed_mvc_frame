@@ -2,7 +2,8 @@
 由 [frame](https://github.com/smarty-kiki/frame#frame) 框架衍生的分布式框架中的应用层 MVC 框架, 供快速开发使用
 
 ## 目录结构及文件说明
-
+```
+.
 ├── config (配置文件目录)  
 │   ├── development (开发环境配置覆盖目录)                               
 │   └── production (线上愿景配置覆盖目录)  
@@ -38,7 +39,7 @@
 ├── LICENSE  
 ├── README.md  
 └── bootstrap.php (框架通用加载文件)  
-  
+```
 ## 10 秒看到 helloworld
   
 1. 先将代码 clone 或者下载到本地
