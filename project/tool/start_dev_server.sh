@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"/../..
+ROOT_DIR="$(cd "$(dirname $0)" && pwd)"/../../
 
 DEP_SERVICE_FILE=$ROOT_DIR/dep_service_list
 if [ ! -f $DEP_SERVICE_FILE ]
