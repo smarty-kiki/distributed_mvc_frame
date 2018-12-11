@@ -1,18 +1,18 @@
 #!/bin/bash
 
-function get_relative_path
+get_relative_path()
 {
     python -c "import os.path; print os.path.relpath('$1', '$2')"
 }
 
-function add_gitignore
+add_gitignore()
 {
     echo "$1" >> $ROOT_DIR/.gitignore
     cat $ROOT_DIR/.gitignore | sort | uniq > $ROOT_DIR/.gitignore.tmp
     mv $ROOT_DIR/.gitignore.tmp $ROOT_DIR/.gitignore
 }
 
-function checkout_branch
+checkout_branch()
 {
     REPOSITORY_DIR=$1
     TARGET_BRANCH=$2
@@ -25,12 +25,12 @@ function checkout_branch
     fi
 }
 
-function git_clone
+git_clone()
 {
     git clone $1 $2 || (echo "获取项目 $3 失败" && exit)
 }
 
-function dep_frame_file
+dep_frame_file()
 {
     git_clone $FRAME_REPOSITORY $FRAME_DIR frame
     checkout_branch $FRAME_DIR $BRANCH
@@ -38,7 +38,7 @@ function dep_frame_file
     add_gitignore '/frame'
 }
 
-function dep_frame_link
+dep_frame_link()
 {
     FRAME_TMP_DIR=$ROOT_DIR/../frame
 
@@ -52,7 +52,7 @@ function dep_frame_link
     add_gitignore '/frame'
 }
 
-function dep_service_file
+dep_service_file()
 {
     SERVICE_NAME=$1
     SERVICE_REPOSITORY=$2
@@ -70,7 +70,7 @@ function dep_service_file
     rm -rf $SERVICE_TMP_DIR
 }
 
-function dep_service_link
+dep_service_link()
 {
     SERVICE_NAME=$1
     SERVICE_REPOSITORY=$2
@@ -89,7 +89,7 @@ function dep_service_link
     echo "include __DIR__.'/$SERVICE_NAME/load.php';" >> $DEP_DOMAIN_DIR/load.php
 }
 
-function dep_cli_file
+dep_cli_file()
 {
     CLI_NAME=$1
     CLI_REPOSITORY=$2
@@ -104,7 +104,7 @@ function dep_cli_file
     rm -rf $CLI_TMP_DIR
 }
 
-function dep_cli_link
+dep_cli_link()
 {
     CLI_NAME=$1
     CLI_REPOSITORY=$2
